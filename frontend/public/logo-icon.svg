@@ -1,0 +1,30 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue background circle with gradient -->
+  <circle cx="60" cy="60" r="55" fill="url(#gradient)"/>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dollar sign main shape -->
+  <path d="M70 40H50V50H60C65.5228 50 70 54.4772 70 60C70 65.5228 65.5228 70 60 70H50V80H70M60 40V35M60 80V85" 
+        stroke="white" 
+        stroke-width="6" 
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <!-- Sparkle effect -->
+  <path d="M75 35L80 30L75 25M45 85L40 90L45 95" 
+        stroke="#93C5FD" 
+        stroke-width="2"
+        stroke-linecap="round"/>
+  
+  <!-- Subtle graph lines in background -->
+  <path d="M35 50L45 45L55 60L65 40L75 55L85 45" 
+        stroke="white" 
+        stroke-width="2" 
+        stroke-opacity="0.3"
+        stroke-linecap="round"/>
+</svg>

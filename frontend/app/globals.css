@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* Hide the default Botpress launcher button */
+#bp-web-widget-launcher {
+  display: none !important;
+}
+
+/* Custom styles for Botpress chatbot integration */
+#bp-web-widget-container {
+  z-index: 9999 !important;
+}
+
+/* Ensure chatbot doesn't interfere with other elements */
+.bp-widget-web {
+  z-index: 9999 !important;
+}
+
+/* Custom chatbot button styles */
+.chatbot-button {
+  transition: all 0.3s ease;
+}
+
+.chatbot-button:hover {
+  transform: scale(1.1);
+}
+
+/* Animation for notification dot */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
