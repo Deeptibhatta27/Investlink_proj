@@ -1,0 +1,1 @@
+Failed to setup Django: Cannot import 'backend.startup_posts'. Check that 'startup_posts.apps.StartupPostsConfig.name' is correct.

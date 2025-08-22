@@ -1,0 +1,7 @@
+{
+  "/page": "app/page.js",
+  "/network/page": "app/network/page.js",
+  "/investor/dashboard/page": "app/investor/dashboard/page.js",
+  "/targeting/page": "app/targeting/page.js",
+  "/matching/page": "app/matching/page.js"
+}
