@@ -1,17 +1,8 @@
 {
-<<<<<<< HEAD
-  "/page": "app/page.js",
-  "/network/page": "app/network/page.js",
-  "/investor/dashboard/page": "app/investor/dashboard/page.js",
-  "/targeting/page": "app/targeting/page.js",
-  "/matching/page": "app/matching/page.js"
-=======
   "/_not-found/page": "app/_not-found/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/dummy-startups/route": "app/api/dummy-startups/route.js",
+  "/api/dummy-investors/route": "app/api/dummy-investors/route.js",
   "/page": "app/page.js",
-  "/login/page": "app/login/page.js",
-  "/investor/dashboard/page": "app/investor/dashboard/page.js",
-  "/matching/page": "app/matching/page.js",
-  "/network/page": "app/network/page.js"
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
+  "/matching/page": "app/matching/page.js"
 }

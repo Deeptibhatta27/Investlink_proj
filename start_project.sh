@@ -3,8 +3,7 @@
 # InvestLink Project Startup Script
 # This script activates the virtual environment and starts all services
 
-echo "🚀 Starting InvestLink Project..."
-echo "================================"
+
 
 # Check if virtual environment exists
 if [ ! -d ".venv" ]; then

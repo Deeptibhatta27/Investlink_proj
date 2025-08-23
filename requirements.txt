@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-# Django Backend Dependencies
-=======
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
+
 annotated-types==0.7.0
 asgiref==3.9.1
 cachetools==5.5.2
@@ -23,8 +20,7 @@ grpcio==1.74.0
 grpcio-status==1.71.2
 httplib2==0.22.0
 idna==3.10
-<<<<<<< HEAD
-=======
+
 joblib==1.5.1
 numpy==2.3.2
 pandas==2.3.1
@@ -36,7 +32,6 @@ pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pydantic==2.11.7
 pydantic_core==2.33.2
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
 PyJWT==2.10.1
 pyparsing==3.2.3
 python-dateutil==2.9.0.post0
@@ -44,11 +39,9 @@ python-dotenv==1.1.1
 pytz==2025.2
 requests==2.32.4
 rsa==4.9.1
-<<<<<<< HEAD
-=======
+
 scikit-learn==1.7.1
 scipy==1.16.1
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
 six==1.17.0
 sqlparse==0.5.3
 threadpoolctl==3.6.0
@@ -58,7 +51,6 @@ typing_extensions==4.14.1
 tzdata==2025.2
 uritemplate==4.2.0
 urllib3==2.5.0
-<<<<<<< HEAD
 
 # FastAPI Recommender Dependencies
 fastapi>=0.100.0
@@ -90,5 +82,3 @@ pillow==11.3.0
 # Additional Dependencies
 proto-plus==1.26.1
 protobuf==5.29.5
-=======
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d

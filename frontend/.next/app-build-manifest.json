@@ -6,7 +6,11 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-<<<<<<< HEAD
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/page.js"
+    ],
     "/matching/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -22,52 +26,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/dummy-investors/route.js"
     ],
-=======
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
-    ],
-<<<<<<< HEAD
-    "/network/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/network/page.js"
-    ],
-=======
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
-    "/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/login/page.js"
-    ],
-    "/investor/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/investor/dashboard/page.js"
-    ],
-<<<<<<< HEAD
-    "/targeting/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/targeting/page.js"
-=======
-    "/network/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/network/page.js"
-    ],
-    "/matching/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/matching/page.js"
-    ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/_not-found/page.js"
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     ]
   }
 }
