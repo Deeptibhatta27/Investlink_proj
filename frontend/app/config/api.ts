@@ -1,7 +1,10 @@
 // API Configuration for connecting to Django backend
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+<<<<<<< HEAD
 export const RECOMMENDER_URL = process.env.NEXT_PUBLIC_RECOMMENDER_URL || 'http://localhost:8001';
+=======
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
 
 export const API_ENDPOINTS = {
   // Authentication
@@ -21,12 +24,15 @@ export const API_ENDPOINTS = {
   // Messages
   MESSAGES: `${API_BASE_URL}/api/messages/`,
   SEND_MESSAGE: `${API_BASE_URL}/api/messages/send/`,
+<<<<<<< HEAD
 
   // AI Recommender
   RECOMMENDER_BASE: RECOMMENDER_URL,
   PREDICT_COMPATIBILITY: `${RECOMMENDER_URL}/predict_compatibility/`,
   PREDICT_TRACTION: `${RECOMMENDER_URL}/predict_traction/`,
   SECTOR_SIMILARITY: `${RECOMMENDER_URL}/sector_similarity/`,
+=======
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
 };
 
 export const API_CONFIG = {

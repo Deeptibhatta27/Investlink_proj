@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // File: /home/sakshamrimal/project/frontend/app/investor/dashboard/page.tsx
+=======
+// File: /home/sakshamrimal/Investlink_Project/frontend/app/investor/dashboard/page.tsx
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
 import * as entry from '../../../../../app/investor/dashboard/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

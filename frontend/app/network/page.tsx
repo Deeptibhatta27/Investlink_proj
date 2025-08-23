@@ -16,7 +16,11 @@ import { useAuth } from '@/contexts/AuthContext';
 // Sample data for role-specific viewing
 const sampleStartups: NetworkMember[] = [
   {
+<<<<<<< HEAD
     id: 1,
+=======
+    id: '1',
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'TechInnovate AI',
     role: 'Startup',
     company: 'TechInnovate AI',
@@ -29,7 +33,11 @@ const sampleStartups: NetworkMember[] = [
     email: 'contact@techinnovate.ai'
   },
   {
+<<<<<<< HEAD
     id: 2,
+=======
+    id: '2',
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'GreenEnergy Solutions',
     role: 'Startup',
     company: 'GreenEnergy Solutions',
@@ -42,7 +50,11 @@ const sampleStartups: NetworkMember[] = [
     email: 'info@greenenergy.com'
   },
   {
+<<<<<<< HEAD
     id: 3,
+=======
+    id: '3',
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'Digital India Tech',
     role: 'Startup',
     company: 'Digital India Tech',
@@ -55,7 +67,11 @@ const sampleStartups: NetworkMember[] = [
     email: 'contact@digitalindia.tech'
   },
   {
+<<<<<<< HEAD
     id: 4,
+=======
+    id: '4',
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'China IoT Solutions',
     role: 'Startup',
     company: 'China IoT Solutions',
@@ -71,7 +87,11 @@ const sampleStartups: NetworkMember[] = [
 
 const sampleInvestors: NetworkMember[] = [
   {
+<<<<<<< HEAD
     id: 1,
+=======
+    id: '1',
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'Nepal Investment Partners',
     role: 'Investor',
     company: 'Nepal Investment Partners',
@@ -84,7 +104,11 @@ const sampleInvestors: NetworkMember[] = [
     email: 'invest@nepalinvestments.com'
   },
   {
+<<<<<<< HEAD
     id: 2,
+=======
+    id: '2',
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'US Innovation Capital',
     role: 'Investor',
     company: 'US Innovation Capital',
@@ -97,7 +121,11 @@ const sampleInvestors: NetworkMember[] = [
     email: 'investments@usinnovation.com'
   },
   {
+<<<<<<< HEAD
     id: 3,
+=======
+    id: '3',
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'India Growth Fund',
     role: 'Investor',
     company: 'India Growth Fund',
@@ -110,7 +138,11 @@ const sampleInvestors: NetworkMember[] = [
     email: 'invest@indiagrowth.com'
   },
   {
+<<<<<<< HEAD
     id: 4,
+=======
+    id: '4',
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'China Tech Investments',
     role: 'Investor',
     company: 'China Tech Investments',
@@ -225,9 +257,15 @@ export default function NetworkPage() {
         liked: false,
         createdAt: new Date().toISOString(),
         author: {
+<<<<<<< HEAD
           id: String(user?.id || '1'),
           name: user?.username || 'Your Startup',
           imageUrl: '/images/profile-placeholder.jpg'
+=======
+          id: user?.id || '1',
+          name: user?.name || 'Your Startup',
+          imageUrl: user?.imageUrl || '/images/profile-placeholder.jpg'
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
         }
       };
       
@@ -249,7 +287,11 @@ export default function NetworkPage() {
         if (post.id === postId) {
           return {
             ...post,
+<<<<<<< HEAD
             likes: post.liked ? (post.likes || 0) - 1 : (post.likes || 0) + 1,
+=======
+            likes: post.liked ? post.likes - 1 : post.likes + 1,
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
             liked: !post.liked
           };
         }
@@ -328,6 +370,12 @@ export default function NetworkPage() {
             <NetworkSearch 
               onSearch={handleSearch} 
               onFilter={handleFilter}
+<<<<<<< HEAD
+=======
+              availableLocations={availableLocations}
+              availableIndustries={availableIndustries}
+              currentFilters={filters}
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
             />
 
             {/* Startup Posts Section */}
@@ -355,9 +403,18 @@ export default function NetworkPage() {
                 ) : (
                   <div className="grid gap-6">
                     {startupPosts.map((post) => (
+<<<<<<< HEAD
                       <div key={post.id} className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
                         <p className="text-gray-600">{post.content}</p>
                       </div>
+=======
+                      <StartupPost
+                        key={post.id}
+                        post={post}
+                        onLike={() => handleLikePost(post.id)}
+                        currentUserId={user?.id}
+                      />
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
                     ))}
                   </div>
                 )}
@@ -422,7 +479,11 @@ export default function NetworkPage() {
                 {filteredMembers.map((member) => (
                   <NetworkCard
                     key={member.id}
+<<<<<<< HEAD
                     {...member}
+=======
+                    member={member}
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
                     onMessage={() => {
                       setSelectedMember(member);
                       setShowMessageModal(true);

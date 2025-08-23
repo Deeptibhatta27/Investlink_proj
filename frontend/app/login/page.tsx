@@ -1,7 +1,11 @@
 // app/login/page.tsx
 "use client";
 
+<<<<<<< HEAD
 import React, { useState, useEffect, Suspense } from "react";
+=======
+import React, { useState, useEffect } from "react";
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,7 +32,11 @@ const Alert = ({ message, type }: { message: string; type: 'success' | 'error' }
 };
 
 
+<<<<<<< HEAD
 function LoginPageContent() {
+=======
+export default function LoginPage() {
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'investor' | 'startup'>('investor');
@@ -205,6 +213,7 @@ function LoginPageContent() {
     </main>
   );
 }
+<<<<<<< HEAD
 
 export default function LoginPage() {
   return (
@@ -213,3 +222,5 @@ export default function LoginPage() {
     </Suspense>
   );
 }
+=======
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d

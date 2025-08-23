@@ -7,7 +7,11 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 
 function AdvancedSearch() {
   const [searchParams, setSearchParams] = useState({ industry: '', location: '', revenue: '' });
+<<<<<<< HEAD
   const [results, setResults] = useState<any[]>([]);
+=======
+  const [results, setResults] = useState([]);
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

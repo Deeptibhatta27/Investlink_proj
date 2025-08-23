@@ -61,13 +61,26 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+<<<<<<< HEAD
     'X-Client-Version': '1.0.0'
+=======
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   },
   withCredentials: true, // This is important for handling cookies if you're using session auth
   timeout: 10000, // 10 second timeout
   // Retry configuration
   validateStatus: function (status) {
     return status >= 200 && status < 300; // default
+<<<<<<< HEAD
+=======
+  },
+  // Add metadata to help with debugging
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-Client-Version': '1.0.0',
+    'X-Request-ID': () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   }
 });
 

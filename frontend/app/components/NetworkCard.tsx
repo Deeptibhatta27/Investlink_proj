@@ -49,7 +49,11 @@ export default function NetworkCard({
       const result = await networkService.connectWithUser(id);
 
       console.log('Connection response:', {
+<<<<<<< HEAD
         userId: id,
+=======
+        userId: id,Q
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
         result,
         timestamp: new Date().toISOString()
       });

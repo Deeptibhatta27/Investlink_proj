@@ -32,6 +32,7 @@ import MessageCard from '../../components/MessageCard'; // Import the new Messag
 import ConfirmLogoutModal from '../../components/ConfirmLogoutModal';
 
 // Mock Data for Investment Portfolio (replace with real data later)
+<<<<<<< HEAD
 const mockInvestments: Array<{
   companyName: string;
   companySector: string;
@@ -49,6 +50,9 @@ const mockInvestments: Array<{
   performanceStatus: 'Performing Well' | 'Review Required' | 'Exit Opportunity';
   performanceColor: 'green' | 'orange' | 'purple';
 }> = [
+=======
+const mockInvestments = [
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   {
     companyName: "TechFlowAI",
     companySector: "AI/ML",
@@ -171,6 +175,7 @@ const assetAllocationData = {
 };
 
 // Mock data for Opportunities
+<<<<<<< HEAD
 const mockOpportunities: Array<{
   companyName: string;
   industry: string;
@@ -182,6 +187,9 @@ const mockOpportunities: Array<{
   traction: string;
   status: 'Open' | 'Closing Soon' | 'Closed';
 }> = [
+=======
+const mockOpportunities = [
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   {
     companyName: "Quantum Leap Innovations",
     industry: "Deep Tech",

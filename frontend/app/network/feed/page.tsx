@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 'use client';
 
+=======
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
 import { useEffect, useState } from 'react';
 import { networkService } from '../../services/networkService';
 import NetworkPost from '../../components/NetworkPost';
@@ -9,7 +12,11 @@ import { useInView } from 'react-intersection-observer';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function NetworkFeed() {
+<<<<<<< HEAD
   const [posts, setPosts] = useState<any[]>([]);
+=======
+  const [posts, setPosts] = useState([]);
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
@@ -48,7 +55,11 @@ export default function NetworkFeed() {
     }
   }, [inView, hasMore, loading]);
 
+<<<<<<< HEAD
   const handleCreatePost = async (postData: any) => {
+=======
+  const handleCreatePost = async (postData) => {
+>>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     try {
       await networkService.createPost(postData);
       fetchPosts(1); // Refresh posts
