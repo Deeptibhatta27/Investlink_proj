@@ -1,11 +1,8 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/api/dummy-startups/route": "app/api/dummy-startups/route.js",
-  "/api/dummy-investors/route": "app/api/dummy-investors/route.js",
   "/page": "app/page.js",
   "/network/page": "app/network/page.js",
-  "/matching/page": "app/matching/page.js",
-  "/login/page": "app/login/page.js",
   "/investor/dashboard/page": "app/investor/dashboard/page.js",
-  "/targeting/page": "app/targeting/page.js"
+  "/login/page": "app/login/page.js",
+  "/signup/page": "app/signup/page.js"
 }

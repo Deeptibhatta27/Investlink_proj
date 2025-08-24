@@ -50,6 +50,9 @@ export default function MessageModal({
       const token = localStorage.getItem('token');
       if (token) {
         websocketService.connect(currentUserId, token);
+      } else {
+        console.error('No authentication token found');
+        setError('Authentication required. Please login again.');
       }
       
       // Subscribe to WebSocket events

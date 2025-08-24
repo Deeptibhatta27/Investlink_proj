@@ -29,6 +29,13 @@ class WebSocketService {
     const wsUrl = `${protocol}//${host}/ws/chat/${userId}/?token=${token}`;
 
     try {
+      // Use the same protocol and host as the API
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const url = new URL(apiBaseUrl);
+      const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = url.host;
+      const wsUrl = `${protocol}//${host}/ws/chat/${userId}/?token=${token}`;
+      
       this.socket = new WebSocket(wsUrl);
 
       this.socket.onopen = () => {

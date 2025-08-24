@@ -154,12 +154,35 @@ export default function NetworkPage() {
       return;
     }
 
-    const initialMembers = user.role === 'investor' ? sampleStartups : sampleInvestors;
-    setNetworkMembers(initialMembers);
-    setFilteredMembers(initialMembers);
-    setLoading(false);
+    // Load real data from API
+    loadNetworkMembers();
     loadStartupPosts();
   }, [user, router]);
+
+  const loadNetworkMembers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Fetch network members from API
+      const members = await networkService.getNetworkMembers({
+        type: user?.role === 'investor' ? 'startup' : 'investor'
+      });
+      
+      setNetworkMembers(members);
+      setFilteredMembers(members);
+    } catch (err: any) {
+      console.error('Failed to load network members:', err);
+      setError(err.message || 'Failed to load network members');
+      
+      // Fallback to sample data
+      const initialMembers = user?.role === 'investor' ? sampleStartups : sampleInvestors;
+      setNetworkMembers(initialMembers);
+      setFilteredMembers(initialMembers);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadStartupPosts = async () => {
     try {
@@ -209,7 +232,7 @@ export default function NetworkPage() {
               imageUrl: '/images/profile-placeholder.jpg'
             }
           }
-        ];
+        ].slice(0, 6); // Limit to 6 posts
       }
       setStartupPosts(posts);
     } catch (error) {

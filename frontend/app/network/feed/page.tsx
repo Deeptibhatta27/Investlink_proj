@@ -23,16 +23,20 @@ export default function NetworkFeed() {
   const fetchPosts = async (pageNum = 1) => {
     try {
       setLoading(true);
+      setError(null);
+      
       // Limit to 6 posts total
       const newPosts = await networkService.getNetworkPosts({ page: pageNum, limit: 6 });
+      
       // Limit the total number of posts to 6
       setPosts(prev => {
         const allPosts = pageNum === 1 ? newPosts : [...prev, ...newPosts];
         return allPosts.slice(0, 6);
       });
+      
       setHasMore(false); // Disable infinite scrolling
-      setError(null);
     } catch (error: any) {
+      console.error('Failed to load posts:', error);
       setError(error.message || 'Failed to load posts');
     } finally {
       setLoading(false);
