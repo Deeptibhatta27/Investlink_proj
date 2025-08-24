@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaImage, FaLink, FaTimes } from 'react-icons/fa';
+import { networkService } from '../services/networkService';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -10,7 +11,7 @@ interface CreatePostModalProps {
 interface PostData {
   content: string;
   attachments?: {
-    type: 'image' | 'link';
+    type: 'image' | 'link' | 'pdf';
     url: string;
     title?: string;
     description?: string;
@@ -47,12 +48,18 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit }: CreatePos
     if (!file) return;
 
     try {
-      // TODO: Implement file upload to your backend/storage
-      const uploadedUrl = URL.createObjectURL(file);
+      // Determine file type
+      let fileType: 'image' | 'pdf' = 'image';
+      if (file.type === 'application/pdf') {
+        fileType = 'pdf';
+      }
+
+      // Upload file to backend
+      const uploadedUrl = await networkService.uploadFile(file);
       setAttachments([
         ...attachments ?? [],
         {
-          type: 'image',
+          type: fileType,
           url: uploadedUrl,
         },
       ]);
@@ -157,6 +164,23 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit }: CreatePos
                         id="file-upload"
                         type="file"
                         accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => document.getElementById('pdf-upload')?.click()}
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                      >
+                        <svg className="mr-2 w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                        </svg>
+                        PDF
+                      </button>
+                      <input
+                        id="pdf-upload"
+                        type="file"
+                        accept=".pdf"
                         onChange={handleFileUpload}
                         className="hidden"
                       />

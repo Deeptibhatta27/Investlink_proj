@@ -9,6 +9,7 @@ import NetworkSearch from '@/components/NetworkSearch';
 import MessageModal from '@/components/MessageModal';
 import StartupPost from '@/components/StartupPost';
 import CreateStartupPostModal from '@/components/CreateStartupPostModal';
+import NetworkPost from '@/components/NetworkPost';
 import { networkService, NetworkMember, NetworkFilters } from '@/services/networkService';
 import { startupPostService, StartupPost as IStartupPost } from '@/services/startupPostService';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,11 +17,7 @@ import { useAuth } from '@/contexts/AuthContext';
 // Sample data for role-specific viewing
 const sampleStartups: NetworkMember[] = [
   {
-<<<<<<< HEAD
     id: 1,
-=======
-    id: '1',
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'TechInnovate AI',
     role: 'Startup',
     company: 'TechInnovate AI',
@@ -33,11 +30,7 @@ const sampleStartups: NetworkMember[] = [
     email: 'contact@techinnovate.ai'
   },
   {
-<<<<<<< HEAD
     id: 2,
-=======
-    id: '2',
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'GreenEnergy Solutions',
     role: 'Startup',
     company: 'GreenEnergy Solutions',
@@ -50,11 +43,7 @@ const sampleStartups: NetworkMember[] = [
     email: 'info@greenenergy.com'
   },
   {
-<<<<<<< HEAD
     id: 3,
-=======
-    id: '3',
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'Digital India Tech',
     role: 'Startup',
     company: 'Digital India Tech',
@@ -67,11 +56,7 @@ const sampleStartups: NetworkMember[] = [
     email: 'contact@digitalindia.tech'
   },
   {
-<<<<<<< HEAD
     id: 4,
-=======
-    id: '4',
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'China IoT Solutions',
     role: 'Startup',
     company: 'China IoT Solutions',
@@ -87,11 +72,7 @@ const sampleStartups: NetworkMember[] = [
 
 const sampleInvestors: NetworkMember[] = [
   {
-<<<<<<< HEAD
     id: 1,
-=======
-    id: '1',
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'Nepal Investment Partners',
     role: 'Investor',
     company: 'Nepal Investment Partners',
@@ -104,11 +85,7 @@ const sampleInvestors: NetworkMember[] = [
     email: 'invest@nepalinvestments.com'
   },
   {
-<<<<<<< HEAD
     id: 2,
-=======
-    id: '2',
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'US Innovation Capital',
     role: 'Investor',
     company: 'US Innovation Capital',
@@ -121,11 +98,7 @@ const sampleInvestors: NetworkMember[] = [
     email: 'investments@usinnovation.com'
   },
   {
-<<<<<<< HEAD
     id: 3,
-=======
-    id: '3',
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'India Growth Fund',
     role: 'Investor',
     company: 'India Growth Fund',
@@ -138,11 +111,7 @@ const sampleInvestors: NetworkMember[] = [
     email: 'invest@indiagrowth.com'
   },
   {
-<<<<<<< HEAD
     id: 4,
-=======
-    id: '4',
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     name: 'China Tech Investments',
     role: 'Investor',
     company: 'China Tech Investments',
@@ -195,10 +164,23 @@ export default function NetworkPage() {
   const loadStartupPosts = async () => {
     try {
       setLoadingPosts(true);
-      // Try to fetch posts from the API
+      // Try to fetch posts from the API using networkService
       let posts: IStartupPost[] = [];
       try {
-        posts = await startupPostService.getPosts();
+        const networkPosts = await networkService.getNetworkPosts({ limit: 6 });
+        // Convert network posts to startup posts format
+        posts = networkPosts.map(post => ({
+          id: post.id,
+          content: post.content,
+          likes: post.likes,
+          liked: post.isLiked,
+          createdAt: post.createdAt,
+          author: {
+            id: post.author.id.toString(),
+            name: post.author.name,
+            imageUrl: post.author.imageUrl
+          }
+        }));
       } catch (apiError) {
         console.warn('Failed to fetch posts from API, using sample data', apiError);
         // Fallback to sample data if API fails
@@ -257,15 +239,9 @@ export default function NetworkPage() {
         liked: false,
         createdAt: new Date().toISOString(),
         author: {
-<<<<<<< HEAD
           id: String(user?.id || '1'),
           name: user?.username || 'Your Startup',
           imageUrl: '/images/profile-placeholder.jpg'
-=======
-          id: user?.id || '1',
-          name: user?.name || 'Your Startup',
-          imageUrl: user?.imageUrl || '/images/profile-placeholder.jpg'
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
         }
       };
       
@@ -287,11 +263,7 @@ export default function NetworkPage() {
         if (post.id === postId) {
           return {
             ...post,
-<<<<<<< HEAD
             likes: post.liked ? (post.likes || 0) - 1 : (post.likes || 0) + 1,
-=======
-            likes: post.liked ? post.likes - 1 : post.likes + 1,
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
             liked: !post.liked
           };
         }
@@ -370,19 +342,15 @@ export default function NetworkPage() {
             <NetworkSearch 
               onSearch={handleSearch} 
               onFilter={handleFilter}
-<<<<<<< HEAD
-=======
-              availableLocations={availableLocations}
-              availableIndustries={availableIndustries}
-              currentFilters={filters}
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
             />
 
             {/* Startup Posts Section */}
-            {user?.role === 'startup' && (
-              <div className="mb-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Your Posts</h2>
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {user?.role === 'startup' ? 'Your Posts' : 'Network Posts'}
+                </h2>
+                {user?.role === 'startup' && (
                   <button
                     onClick={() => setShowCreatePostModal(true)}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -390,42 +358,56 @@ export default function NetworkPage() {
                     <FaPlus className="w-4 h-4" />
                     Create Post
                   </button>
-                </div>
-
-                {loadingPosts ? (
-                  <div className="flex justify-center items-center min-h-[200px]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                  </div>
-                ) : startupPosts.length === 0 ? (
-                  <div className="text-center py-8 bg-gray-50 rounded-lg">
-                    <p className="text-gray-600">No posts yet. Create your first post!</p>
-                  </div>
-                ) : (
-                  <div className="grid gap-6">
-                    {startupPosts.map((post) => (
-<<<<<<< HEAD
-                      <div key={post.id} className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
-                        <p className="text-gray-600">{post.content}</p>
-                      </div>
-=======
-                      <StartupPost
-                        key={post.id}
-                        post={post}
-                        onLike={() => handleLikePost(post.id)}
-                        currentUserId={user?.id}
-                      />
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
-                    ))}
-                  </div>
                 )}
+              </div>
 
+              {loadingPosts ? (
+                <div className="flex justify-center items-center min-h-[200px]">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+              ) : startupPosts.length === 0 ? (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <p className="text-gray-600">
+                    {user?.role === 'startup'
+                      ? 'No posts yet. Create your first post!'
+                      : 'No posts from startups in your network yet.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  {startupPosts.map((post) => (
+                    <NetworkPost
+                      key={post.id}
+                      post={{
+                        id: post.id,
+                        author: {
+                          id: parseInt(post.author.id),
+                          name: post.author.name,
+                          role: user?.role === 'investor' ? 'Startup' : 'Your Startup',
+                          company: '',
+                          imageUrl: post.author.imageUrl || '/images/profile-placeholder.jpg',
+                        },
+                        content: post.content,
+                        attachments: [],
+                        likes: post.likes || 0,
+                        comments: 0,
+                        createdAt: post.createdAt,
+                        isLiked: post.liked || false,
+                        isSaved: false,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {user?.role === 'startup' && (
                 <CreateStartupPostModal
                   isOpen={showCreatePostModal}
                   onClose={() => setShowCreatePostModal(false)}
                   onSubmit={handleCreatePost}
                 />
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Network Members Grid */}
             {loading ? (
@@ -479,11 +461,7 @@ export default function NetworkPage() {
                 {filteredMembers.map((member) => (
                   <NetworkCard
                     key={member.id}
-<<<<<<< HEAD
                     {...member}
-=======
-                    member={member}
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
                     onMessage={() => {
                       setSelectedMember(member);
                       setShowMessageModal(true);

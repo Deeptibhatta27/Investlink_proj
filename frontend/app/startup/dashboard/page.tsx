@@ -76,7 +76,7 @@ export default function StartupDashboardPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token');
       if (token) {
         try {
           const decodedToken = decodeJWTToken(token);
@@ -95,7 +95,7 @@ export default function StartupDashboardPage() {
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
     router.push('/');
   };
 

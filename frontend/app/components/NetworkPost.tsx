@@ -16,7 +16,7 @@ interface NetworkPostProps {
     };
     content: string;
     attachments?: {
-      type: 'image' | 'link';
+      type: 'image' | 'link' | 'pdf';
       url: string;
       title?: string;
       description?: string;
@@ -48,7 +48,10 @@ export default function NetworkPost({ post }: NetworkPostProps) {
   const handleSave = async () => {
     try {
       await networkService.toggleSavePost(post.id);
+      // Since there's no backend implementation, we'll just toggle the state locally
+      // and show a message to the user
       setIsSaved(!isSaved);
+      alert('Save feature not implemented in backend yet');
     } catch (error) {
       console.error('Error toggling save:', error);
     }
@@ -95,6 +98,26 @@ export default function NetworkPost({ post }: NetworkPostProps) {
                   className="object-cover"
                 />
               </div>
+            ) : attachment.type === 'pdf' ? (
+              <a
+                key={index}
+                href={attachment.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-4 hover:bg-gray-50 border-b border-gray-100"
+              >
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center mr-3">
+                    <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-blue-600">PDF Document</h4>
+                    <p className="text-sm text-gray-500">Click to view</p>
+                  </div>
+                </div>
+              </a>
             ) : (
               <a
                 key={index}

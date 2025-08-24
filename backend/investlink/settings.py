@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'channels',
     'accounts.apps.AccountsConfig',
     'startup_posts.apps.StartupPostsConfig',
     'matchmaking.apps.MatchmakingConfig',
@@ -91,6 +92,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'investlink.wsgi.application'
+ASGI_APPLICATION = 'investlink.asgi.application'
 
 
 # Database
@@ -185,3 +187,10 @@ CORS_ALLOW_HEADERS = [
     'x-client-version',
     'x-request-id',
 ]
+
+# Channels configuration
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}

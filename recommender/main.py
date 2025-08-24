@@ -8,6 +8,7 @@ import numpy as np
 from typing import List
 import os
 import logging
+import re
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -78,6 +79,12 @@ try:
     thesis_vectorizer = joblib.load('thesis_vectorizer.joblib')
     description_vectorizer = joblib.load('description_vectorizer.joblib')
     logger.info("Models and vectorizers loaded successfully.")
+    
+    # Get actual expected feature dimensions from the models
+    COMPAT_EXPECTED_FEATURES = compat_model.n_features_in_
+    TRACTION_EXPECTED_FEATURES = traction_model.n_features_in_
+    logger.info(f"Model expected features - Compatibility: {COMPAT_EXPECTED_FEATURES}, Traction: {TRACTION_EXPECTED_FEATURES}")
+    
 except Exception as e:
     logger.error(f"Failed to load models or vectorizers: {str(e)}")
     raise
@@ -87,7 +94,15 @@ SECTORS = ['Tech', 'Healthcare', 'Fintech', 'Consumer', 'Enterprise', 'AI/ML', '
 STAGES = ['Pre-seed', 'Seed', 'Series A', 'Series B', 'Growth']
 INVESTOR_TYPES = {"VC": 0, "Angel": 1, "Corporate": 2, "PE": 3}
 
-# Preprocessing function (improved version)
+# Calculate investor and startup feature dimensions based on model expectations
+# Assuming compatibility model expects investor + startup features
+INVESTOR_FEATURES = 250  # Based on your original setup
+STARTUP_COMPAT_FEATURES = COMPAT_EXPECTED_FEATURES - INVESTOR_FEATURES
+STARTUP_TRACTION_FEATURES = TRACTION_EXPECTED_FEATURES
+
+logger.info(f"Adjusted feature dimensions - Investor: {INVESTOR_FEATURES}, Startup Compat: {STARTUP_COMPAT_FEATURES}, Startup Traction: {STARTUP_TRACTION_FEATURES}")
+
+# Preprocessing function (aligned with model expectations)
 def preprocess_input(investor_data, startup_data):
     try:
         if investor_data:
@@ -131,11 +146,13 @@ def preprocess_input(investor_data, startup_data):
                 thesis_vec[0]
             ], dtype=np.float32)
             
-            # Pad investor vector if needed
-            if investor_vec.shape[0] < 250:  # Half of expected 489 features
-                investor_vec = np.pad(investor_vec, (0, 250 - investor_vec.shape[0]), 'constant')
+            # Pad investor vector to expected size
+            if investor_vec.shape[0] < INVESTOR_FEATURES:
+                investor_vec = np.pad(investor_vec, (0, INVESTOR_FEATURES - investor_vec.shape[0]), 'constant')
+            elif investor_vec.shape[0] > INVESTOR_FEATURES:
+                investor_vec = investor_vec[:INVESTOR_FEATURES]
         else:
-            investor_vec = np.zeros(250, dtype=np.float32)  # Placeholder for investor features
+            investor_vec = np.zeros(INVESTOR_FEATURES, dtype=np.float32)
 
         if startup_data:
             # Numeric features
@@ -150,13 +167,13 @@ def preprocess_input(investor_data, startup_data):
 
             # Transform description text
             desc_vec = description_vectorizer.transform([startup_data.description]).toarray()
-            if desc_vec.shape[1] != 50:  # Adjust based on your TF-IDF vectorizer's max_features
+            if desc_vec.shape[1] != 50:
                 logger.warning(f"Unexpected description vector shape: {desc_vec.shape}")
                 desc_vec = np.pad(desc_vec, ((0, 0), (0, 50 - desc_vec.shape[1])), 'constant')
 
             # Sector and stage encoding
-            sector_vec = np.zeros(7, dtype=np.float32)  # Match investor sectors
-            stage_vec = np.zeros(5, dtype=np.float32)   # Match investor stages
+            sector_vec = np.zeros(len(SECTORS), dtype=np.float32)
+            stage_vec = np.zeros(len(STAGES), dtype=np.float32)
             if startup_data.sector in SECTORS:
                 sector_vec[SECTORS.index(startup_data.sector)] = 1
             if startup_data.stage in STAGES:
@@ -170,25 +187,23 @@ def preprocess_input(investor_data, startup_data):
                 desc_vec[0]
             ], dtype=np.float32)
 
-            # Create two versions of the startup vector with different paddings
-            # One for compatibility model (240 features to match 250+240=490 total)
+            # Create versions for different models
             startup_vec_compat = base_startup_vec.copy()
-            if startup_vec_compat.shape[0] < 240:
-                startup_vec_compat = np.pad(startup_vec_compat, (0, 240 - startup_vec_compat.shape[0]), 'constant')
-            elif startup_vec_compat.shape[0] > 240:
-                startup_vec_compat = startup_vec_compat[:240]
+            if startup_vec_compat.shape[0] < STARTUP_COMPAT_FEATURES:
+                startup_vec_compat = np.pad(startup_vec_compat, (0, STARTUP_COMPAT_FEATURES - startup_vec_compat.shape[0]), 'constant')
+            elif startup_vec_compat.shape[0] > STARTUP_COMPAT_FEATURES:
+                startup_vec_compat = startup_vec_compat[:STARTUP_COMPAT_FEATURES]
             
-            # One for traction model (309 features as expected by the model)
             startup_vec_traction = base_startup_vec.copy()
-            if startup_vec_traction.shape[0] < 309:
-                startup_vec_traction = np.pad(startup_vec_traction, (0, 309 - startup_vec_traction.shape[0]), 'constant')
-            elif startup_vec_traction.shape[0] > 309:
-                startup_vec_traction = startup_vec_traction[:309]
+            if startup_vec_traction.shape[0] < STARTUP_TRACTION_FEATURES:
+                startup_vec_traction = np.pad(startup_vec_traction, (0, STARTUP_TRACTION_FEATURES - startup_vec_traction.shape[0]), 'constant')
+            elif startup_vec_traction.shape[0] > STARTUP_TRACTION_FEATURES:
+                startup_vec_traction = startup_vec_traction[:STARTUP_TRACTION_FEATURES]
             
-            # Store both vectors
             startup_vectors = (startup_vec_compat, startup_vec_traction)
         else:
-            startup_vectors = (np.zeros(240, dtype=np.float32), np.zeros(309, dtype=np.float32))
+            startup_vectors = (np.zeros(STARTUP_COMPAT_FEATURES, dtype=np.float32), 
+                              np.zeros(STARTUP_TRACTION_FEATURES, dtype=np.float32))
 
         logger.info(f"Investor vector shape: {investor_vec.shape}, Startup vectors shapes: compat={startup_vectors[0].shape}, traction={startup_vectors[1].shape}")
         return investor_vec, startup_vectors
@@ -214,23 +229,18 @@ async def predict_compatibility(investor: InvestorInput, startup: StartupInput):
         logger.info(f"MRR: {startup.mrr}")
         logger.info(f"Growth: {startup.growth_rate}")
         
-        # Get feature vectors - now returns (compat_vec, traction_vec) for startup
+        # Get feature vectors
         investor_vec, (startup_vec_compat, _) = preprocess_input(investor, startup)
         logger.info(f"Generated vectors - Investor: {investor_vec.shape}, Startup: {startup_vec_compat.shape}")
-        
-        # Log vector contents for debugging
-        logger.info(f"Investor vector sample: {investor_vec[:10]}")
-        logger.info(f"Startup vector sample: {startup_vec_compat[:10]}")
         
         # Combine vectors for compatibility prediction
         combined_vec = np.concatenate([investor_vec, startup_vec_compat])
         logger.info(f"Combined vector shape: {combined_vec.shape}")
         
         # Validate expected dimensions
-        expected_features = 490  # 250 investor + 240 startup
-        if combined_vec.shape[0] != expected_features:
-            logger.error(f"Feature dimension mismatch. Expected {expected_features}, got {combined_vec.shape[0]}")
-            return {"error": f"Feature dimension mismatch. Expected {expected_features}, got {combined_vec.shape[0]}", "compatibility_score": 0.0}
+        if combined_vec.shape[0] != COMPAT_EXPECTED_FEATURES:
+            logger.error(f"Feature dimension mismatch. Expected {COMPAT_EXPECTED_FEATURES}, got {combined_vec.shape[0]}")
+            return {"error": f"Feature dimension mismatch. Expected {COMPAT_EXPECTED_FEATURES}, got {combined_vec.shape[0]}", "compatibility_score": 0.0}
         
         # Check for NaN values
         if np.isnan(combined_vec).any():
@@ -266,15 +276,14 @@ async def predict_traction(startup: StartupInput):
     try:
         logger.info(f"Processing traction prediction for startup: {startup.sector}")
         
-        # Get feature vector - use the traction-specific vector
+        # Get feature vector
         _, (_, startup_vec_traction) = preprocess_input(None, startup)
         logger.info(f"Generated startup vector shape: {startup_vec_traction.shape}")
         
         # Validate expected dimensions
-        expected_features = 309
-        if startup_vec_traction.shape[0] != expected_features:
-            logger.error(f"Feature dimension mismatch. Expected {expected_features}, got {startup_vec_traction.shape[0]}")
-            return {"error": f"Feature dimension mismatch. Expected {expected_features}, got {startup_vec_traction.shape[0]}", "traction_score": 0.0}
+        if startup_vec_traction.shape[0] != TRACTION_EXPECTED_FEATURES:
+            logger.error(f"Feature dimension mismatch. Expected {TRACTION_EXPECTED_FEATURES}, got {startup_vec_traction.shape[0]}")
+            return {"error": f"Feature dimension mismatch. Expected {TRACTION_EXPECTED_FEATURES}, got {startup_vec_traction.shape[0]}", "traction_score": 0.0}
         
         # Check for NaN values
         if np.isnan(startup_vec_traction).any():
@@ -316,13 +325,13 @@ async def test_features():
             risk_appetite=5.0,
             years_active=5.0,
             total_investments=10000000,
-            preferred_sectors=["Technology"],
+            preferred_sectors=["Tech"],
             preferred_stages=["Seed"],
             thesis="Test thesis for testing feature generation."
         )
         
         test_startup = StartupInput(
-            sector="Technology",
+            sector="Tech",
             stage="Seed",
             location="Test",
             founding_date="2023-01-01",
@@ -343,10 +352,10 @@ async def test_features():
             "startup_compat_shape": startup_compat.shape[0],
             "startup_traction_shape": startup_traction.shape[0],
             "combined_compat_shape": investor_vec.shape[0] + startup_compat.shape[0],
-            "expected_compat": 490,
-            "expected_traction": 309,
-            "compat_match": (investor_vec.shape[0] + startup_compat.shape[0]) == 490,
-            "traction_match": startup_traction.shape[0] == 309
+            "expected_compat": COMPAT_EXPECTED_FEATURES,
+            "expected_traction": TRACTION_EXPECTED_FEATURES,
+            "compat_match": (investor_vec.shape[0] + startup_compat.shape[0]) == COMPAT_EXPECTED_FEATURES,
+            "traction_match": startup_traction.shape[0] == TRACTION_EXPECTED_FEATURES
         }
         
     except Exception as e:
@@ -365,19 +374,55 @@ async def sector_similarity(sector1: str, sector2: str):
             invalid_sectors = [s for s in [sector1, sector2] if s not in SECTORS]
             return {"error": f"Invalid sector(s): {', '.join(invalid_sectors)}", "similarity_score": 0.0}
             
-        # Get similarity score
-        similarity = industry_model.get_sector_similarity(sector1, sector2)
-        similarity_float = float(similarity)
-        
-        if np.isnan(similarity_float):
-            logger.error("Model produced NaN similarity score")
-            return {"error": "Invalid similarity score", "similarity_score": 0.0}
+        # Get similarity score - handle different model types
+        try:
+            if hasattr(industry_model, 'get_sector_similarity'):
+                similarity = industry_model.get_sector_similarity(sector1, sector2)
+            elif hasattr(industry_model, 'wv') and hasattr(industry_model.wv, 'similarity'):
+                # Word2Vec model
+                similarity = (1 + industry_model.wv.similarity(sector1, sector2)) / 2
+            else:
+                similarity = 0.5  # Default
+                
+            similarity_float = float(similarity)
             
-        logger.info(f"Similarity calculation complete. Score: {similarity_float}")
-        return {"similarity_score": similarity_float}
+            if np.isnan(similarity_float):
+                logger.error("Model produced NaN similarity score")
+                return {"error": "Invalid similarity score", "similarity_score": 0.0}
+                
+            logger.info(f"Similarity calculation complete. Score: {similarity_float}")
+            return {"similarity_score": similarity_float}
+            
+        except Exception as model_error:
+            logger.error(f"Error in similarity calculation: {model_error}")
+            return {"error": str(model_error), "similarity_score": 0.5}
         
     except Exception as e:
         logger.error(f"Error in sector_similarity: {str(e)}")
         import traceback
         logger.error(f"Traceback: {traceback.format_exc()}")
         return {"error": str(e), "similarity_score": 0.0}
+
+@app.get("/model_info/")
+async def model_info():
+    """Get information about loaded models"""
+    try:
+        info = {
+            "compatibility_model_type": str(type(compat_model)),
+            "traction_model_type": str(type(traction_model)),
+            "industry_model_type": str(type(industry_model)),
+            "compat_expected_features": COMPAT_EXPECTED_FEATURES,
+            "traction_expected_features": TRACTION_EXPECTED_FEATURES,
+            "compat_has_predict_proba": hasattr(compat_model, 'predict_proba'),
+            "traction_has_predict_proba": hasattr(traction_model, 'predict_proba'),
+            "investor_features": INVESTOR_FEATURES,
+            "startup_compat_features": STARTUP_COMPAT_FEATURES,
+            "startup_traction_features": STARTUP_TRACTION_FEATURES
+        }
+        return info
+    except Exception as e:
+        return {"error": str(e)}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001, reload=True)

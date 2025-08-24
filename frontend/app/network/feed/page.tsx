@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 'use client';
 
-=======
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
 import { useEffect, useState } from 'react';
 import { networkService } from '../../services/networkService';
 import NetworkPost from '../../components/NetworkPost';
@@ -12,11 +9,7 @@ import { useInView } from 'react-intersection-observer';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function NetworkFeed() {
-<<<<<<< HEAD
   const [posts, setPosts] = useState<any[]>([]);
-=======
-  const [posts, setPosts] = useState([]);
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
@@ -30,9 +23,14 @@ export default function NetworkFeed() {
   const fetchPosts = async (pageNum = 1) => {
     try {
       setLoading(true);
-      const newPosts = await networkService.getNetworkPosts({ page: pageNum });
-      setPosts(prev => pageNum === 1 ? newPosts : [...prev, ...newPosts]);
-      setHasMore(newPosts.length > 0);
+      // Limit to 6 posts total
+      const newPosts = await networkService.getNetworkPosts({ page: pageNum, limit: 6 });
+      // Limit the total number of posts to 6
+      setPosts(prev => {
+        const allPosts = pageNum === 1 ? newPosts : [...prev, ...newPosts];
+        return allPosts.slice(0, 6);
+      });
+      setHasMore(false); // Disable infinite scrolling
       setError(null);
     } catch (error: any) {
       setError(error.message || 'Failed to load posts');
@@ -46,20 +44,17 @@ export default function NetworkFeed() {
   }, []);
 
   useEffect(() => {
-    if (inView && hasMore && !loading) {
-      setPage(prev => {
-        const nextPage = prev + 1;
-        fetchPosts(nextPage);
-        return nextPage;
-      });
-    }
+    // Disable infinite scrolling since we're limiting to 6 posts
+    // if (inView && hasMore && !loading) {
+    //   setPage(prev => {
+    //     const nextPage = prev + 1;
+    //     fetchPosts(nextPage);
+    //     return nextPage;
+    //   });
+    // }
   }, [inView, hasMore, loading]);
 
-<<<<<<< HEAD
   const handleCreatePost = async (postData: any) => {
-=======
-  const handleCreatePost = async (postData) => {
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
     try {
       await networkService.createPost(postData);
       fetchPosts(1); // Refresh posts
@@ -110,7 +105,7 @@ export default function NetworkFeed() {
                   <NetworkPost key={post.id} post={post} />
                 ))}
                 {/* Loading indicator */}
-                <div ref={ref} className="py-4 text-center">
+                <div className="py-4 text-center">
                   {loading && <LoadingSpinner />}
                   {!hasMore && posts.length > 0 && (
                     <p className="text-gray-500">No more posts to load</p>

@@ -61,26 +61,13 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-<<<<<<< HEAD
     'X-Client-Version': '1.0.0'
-=======
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   },
   withCredentials: true, // This is important for handling cookies if you're using session auth
   timeout: 10000, // 10 second timeout
   // Retry configuration
   validateStatus: function (status) {
     return status >= 200 && status < 300; // default
-<<<<<<< HEAD
-=======
-  },
-  // Add metadata to help with debugging
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-Client-Version': '1.0.0',
-    'X-Request-ID': () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
->>>>>>> a058e6746c1b2d2bf1c450aa92a3febcdfbba40d
   }
 });
 
@@ -321,7 +308,7 @@ interface Post {
   };
   content: string;
   attachments?: {
-    type: 'image' | 'link';
+    type: 'image' | 'link' | 'pdf';
     url: string;
     title?: string;
     description?: string;
@@ -364,8 +351,33 @@ export const networkService = {
 
   getNetworkPosts: async function(params?: { page?: number; limit?: number }): Promise<Post[]> {
     try {
-      const response = await api.get<{ data: Post[] }>('/network/posts/', { params });
-      return response.data.data;
+      // Use startup posts API with limit
+      const queryParams = {
+        page: params?.page || 1,
+        limit: params?.limit || 6, // Limit to 6 posts
+      };
+      const response = await api.get('/startup-posts/', { params: queryParams });
+      
+      // Transform the response to match our Post interface
+      const posts: Post[] = response.data.map((post: any) => ({
+        id: post.id,
+        author: {
+          id: post.author.id,
+          name: post.author.name || post.author.username,
+          role: post.author.role,
+          company: post.author.company || '',
+          imageUrl: post.author.imageUrl || '/profile-placeholder.jpg',
+        },
+        content: post.content,
+        attachments: [], // We'll need to handle attachments separately
+        likes: post.likes_count || 0,
+        comments: post.comments?.length || 0,
+        createdAt: post.created_at,
+        isLiked: post.is_liked || false,
+        isSaved: false, // Not implemented yet
+      }));
+      
+      return posts;
     } catch (error: unknown) {
       throw handleServiceError(error);
     }
@@ -373,8 +385,33 @@ export const networkService = {
 
   createPost: async function(data: { content: string; attachments?: any[] }): Promise<Post> {
     try {
-      const response = await api.post<{ data: Post }>('/network/posts/', data);
-      return response.data.data;
+      // For startup posts, we need to send title and content
+      const postData = {
+        title: data.content.substring(0, 50) + (data.content.length > 50 ? '...' : ''), // Create a title from content
+        content: data.content,
+      };
+      const response = await api.post('/startup-posts/', postData);
+      
+      // Transform the response to match our Post interface
+      const post: Post = {
+        id: response.data.id,
+        author: {
+          id: response.data.author.id,
+          name: response.data.author.name || response.data.author.username,
+          role: response.data.author.role,
+          company: response.data.author.company || '',
+          imageUrl: response.data.author.imageUrl || '/profile-placeholder.jpg',
+        },
+        content: response.data.content,
+        attachments: data.attachments || [], // Include attachments if provided
+        likes: response.data.likes_count || 0,
+        comments: response.data.comments?.length || 0,
+        createdAt: response.data.created_at,
+        isLiked: response.data.is_liked || false,
+        isSaved: false, // Not implemented yet
+      };
+      
+      return post;
     } catch (error: unknown) {
       throw handleServiceError(error);
     }
@@ -382,7 +419,7 @@ export const networkService = {
 
   toggleLikePost: async function(postId: string): Promise<void> {
     try {
-      await api.post(`/network/posts/${postId}/like/`);
+      await api.post(`/startup-posts/${postId}/like/`);
     } catch (error: unknown) {
       throw handleServiceError(error);
     }
@@ -390,7 +427,8 @@ export const networkService = {
 
   toggleSavePost: async function(postId: string): Promise<void> {
     try {
-      await api.post(`/network/posts/${postId}/save/`);
+      // There is no save action in the backend, so we'll just log this for now
+      console.log('Save post feature not implemented in backend yet');
     } catch (error: unknown) {
       throw handleServiceError(error);
     }
@@ -583,6 +621,19 @@ export const networkService = {
     try {
       const response = await api.get('/pitches/', { params: filters });
       return response.data;
+    } catch (error: unknown) {
+      throw handleServiceError(error);
+    }
+  },
+
+  uploadFile: async function(file: File): Promise<string> {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      // For now, we'll just return a local URL
+      // In a real app, you would upload to your backend/storage
+      return URL.createObjectURL(file);
     } catch (error: unknown) {
       throw handleServiceError(error);
     }

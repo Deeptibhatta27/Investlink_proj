@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { networkService } from '../services/networkService';
-import { FaPaperPlane, FaTimes } from 'react-icons/fa';
+import { websocketService } from '../services/websocketService';
+import { FaPaperPlane, FaTimes, FaWifi } from 'react-icons/fa';
+import { FiWifiOff } from 'react-icons/fi';
 
 interface Message {
   id: number;
@@ -31,6 +33,8 @@ export default function MessageModal({
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -39,17 +43,63 @@ export default function MessageModal({
 
   useEffect(() => {
     if (isOpen) {
+      // Load initial messages
       loadMessages();
-      const interval = setInterval(loadMessages, 5000); // Poll for new messages every 5 seconds
-      return () => clearInterval(interval);
+      
+      // Connect to WebSocket
+      const token = localStorage.getItem('token');
+      if (token) {
+        websocketService.connect(currentUserId, token);
+      }
+      
+      // Subscribe to WebSocket events
+      const handleMessage = (message: any) => {
+        // Only add messages from the current recipient or sent by current user to this recipient
+        if (
+          (message.sender_id === recipientId && message.recipient_id === currentUserId) ||
+          (message.sender_id === currentUserId && message.recipient_id === recipientId)
+        ) {
+          setMessages(prev => [...prev, {
+            id: Date.now(), // Temporary ID for new messages
+            sender: message.sender_id,
+            recipient: message.recipient_id,
+            content: message.message,
+            timestamp: message.timestamp,
+            read: false,
+            sender_username: message.sender_username
+          }]);
+        }
+      };
+      
+      const handleConnection = (isConnected: boolean) => {
+        setConnected(isConnected);
+        if (!isConnected) {
+          setError('Disconnected from chat service. Reconnecting...');
+        } else {
+          setError(null);
+        }
+      };
+      
+      const handleError = (errorMsg: string) => {
+        setError(errorMsg);
+      };
+      
+      websocketService.subscribeToMessages(handleMessage);
+      websocketService.subscribeToConnection(handleConnection);
+      websocketService.subscribeToErrors(handleError);
+      
+      return () => {
+        // Clean up subscriptions
+        websocketService.unsubscribeFromMessages(handleMessage);
+        websocketService.unsubscribeFromConnection(handleConnection);
+        websocketService.unsubscribeFromErrors(handleError);
+      };
     }
-  }, [isOpen, recipientId]);
+  }, [isOpen, recipientId, currentUserId]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const [error, setError] = useState<string | null>(null);
 
   const loadMessages = async () => {
     try {
@@ -113,18 +163,26 @@ export default function MessageModal({
       setLoading(true);
       setError(null);
       
-      // Log the attempt
-      console.log('Attempting to send message:', {
-        recipientId,
-        messageLength: newMessage.trim().length,
-        timestamp: new Date().toISOString()
-      });
-
+      // Send message via WebSocket
+      websocketService.sendMessage(recipientId, newMessage.trim());
+      
+      // Add message to local state immediately for better UX
+      const tempMessage: Message = {
+        id: Date.now(),
+        sender: currentUserId,
+        recipient: recipientId,
+        content: newMessage.trim(),
+        timestamp: new Date().toISOString(),
+        read: false
+      };
+      
+      setMessages(prev => [...prev, tempMessage]);
+      setNewMessage('');
+      
+      // Also send via REST API as fallback
       await networkService.sendMessage(recipientId, newMessage.trim());
       
       console.log('Message sent successfully');
-      setNewMessage('');
-      await loadMessages();
     } catch (error: unknown) {
       let errorMessage: string;
       
@@ -166,7 +224,16 @@ export default function MessageModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-full max-w-lg mx-4">
         <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Chat with {recipientName}</h2>
+          <div className="flex items-center">
+            <h2 className="text-xl font-semibold">Chat with {recipientName}</h2>
+            <div className="ml-3">
+              {connected ? (
+                <FaWifi className="text-green-500" title="Connected" />
+              ) : (
+                <FiWifiOff className="text-red-500" title="Disconnected" />
+              )}
+            </div>
+          </div>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
@@ -189,7 +256,7 @@ export default function MessageModal({
           )}
           {messages.map((message) => (
                 <div
-                  key={message.id}
+                  key={`${message.id}-${message.timestamp}`}
                   className={`flex ${
                     message.sender === currentUserId ? 'justify-end' : 'justify-start'
                   } mb-4`}
@@ -219,11 +286,11 @@ export default function MessageModal({
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type your message..."
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
+              disabled={loading || !connected}
             />
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !connected || !newMessage.trim()}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-300"
             >
               <FaPaperPlane />

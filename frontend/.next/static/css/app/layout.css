@@ -1578,13 +1578,6 @@
     -webkit-user-select: none;
     user-select: none;
   }
-  .group-hover\:bg-red-200 {
-    &:is(:where(.group):hover *) {
-      @media (hover: hover) {
-        background-color: var(--color-red-200);
-      }
-    }
-  }
   .group-hover\:bg-yellow-200 {
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
@@ -1603,13 +1596,6 @@
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
         color: var(--color-gray-700);
-      }
-    }
-  }
-  .group-hover\:text-red-700 {
-    &:is(:where(.group):hover *) {
-      @media (hover: hover) {
-        color: var(--color-red-700);
       }
     }
   }
